@@ -486,6 +486,21 @@ func (v *Vibranium) RemoveImage(opts *pb.RemoveImageOptions, stream pb.CoreRPC_R
 	return err
 }
 
+// CalculateCapacity calculates capacity for each node
+func (v *Vibranium) CalculateCapacity(ctx context.Context, opts *pb.CalculateCapacityOptions) (*pb.CapacityMessage, error) {
+	v.taskAdd("CalculateCapacity", true)
+	defer v.taskDone("CalculateCapacity", true)
+	calOpts, err := toCoreCalculateCapacityOptions(opts)
+	if err != nil {
+		return nil, err
+	}
+	m, err := v.cluster.CalculateCapacity(ctx, calOpts)
+	if err != nil {
+		return nil, err
+	}
+	return toRPCCapacityMessage(m), nil
+}
+
 // CreateContainer create containers
 func (v *Vibranium) CreateContainer(opts *pb.DeployOptions, stream pb.CoreRPC_CreateContainerServer) error {
 	v.taskAdd("CreateContainer", true)
