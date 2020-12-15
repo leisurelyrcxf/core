@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/projecteru2/core/lock"
 	schedulermocks "github.com/projecteru2/core/scheduler/mocks"
 	sourcemocks "github.com/projecteru2/core/source/mocks"
 	storemocks "github.com/projecteru2/core/store/mocks"
@@ -19,10 +20,15 @@ type dummyLock struct {
 	m sync.Mutex
 }
 
-// Lock for lock
-func (d *dummyLock) Lock(ctx context.Context) error {
-	d.m.Lock()
+
+func (d *dummyLock) GetSession() lock.Session {
 	return nil
+}
+
+// Lock for lock
+func (d *dummyLock) Lock(ctx context.Context) (context.Context, error) {
+	d.m.Lock()
+	return context.Background(), nil
 }
 
 // Unlock for unlock
